@@ -7,6 +7,8 @@
 
 use core::num::{NonZeroU16, NonZeroU32, NonZeroUsize};
 
+use std::fmt::Display;
+
 /// Types implementing this trait can be used as symbols for string interners.
 ///
 /// The [`StringInterner::get_or_intern`](`crate::StringInterner::get_or_intern`)
@@ -63,7 +65,7 @@ macro_rules! gen_symbol_for {
         $( #[$doc] )*
         #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub struct $name {
-            value: $non_zero,
+            pub value: $non_zero,
         }
 
         impl Symbol for $name {
@@ -76,6 +78,12 @@ macro_rules! gen_symbol_for {
             #[inline]
             fn to_usize(self) -> usize {
                 self.value.get() as usize - 1
+            }
+        }
+
+        impl Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(f, "{}", self.value)
             }
         }
     };
